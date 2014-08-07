@@ -10,18 +10,20 @@ var main = function() {
         err('device not specified');
     }
 
-    cLog('Hello Commander');
+    cLog('Hello my name is ' + magicWord);
 
     cLog('connecting on device ' + device + ' ...');
     modem.open(device, function(){
         cLog('connected.');
         
-        // readMsgs();
+        readMsgs();
 
         // listners
         var received = 'sms received';
         modem.on(received, function(msg) {
             cLog(received); 
+
+            var response = null;
 
             // check valid msg
             if(checkMagicWord(msg.text)) {
@@ -30,16 +32,41 @@ var main = function() {
                 cLog('command: ' + command);
 
                 // execute command
-                var response = bash(command);
+                bash(command, msg.sender);
+
+                if(response == null) {
+                    response = 'Done sir!';
+                }
             } else {
-                cLog('You dont know me? just say my name.');
+                sendMsg(msg.sender, 'You dont know me? just say my name.');
             }
+        
+            // delete msg
+            modem.deleteMessage(1, function(){
+                cLog('Message deleted');
+            });
         });
     });
 }
 
 var checkMagicWord = function(text) {
     return text.indexOf(magicWord) === -1 ? false : true;
+}
+
+var sendMsg = function(receiver, text) {
+    modem.sms({
+        receiver: receiver,
+        text: text,
+        encoding: '7bit'},
+        function(err, sent_ids) {
+            if(err) {
+                cLog('Error sending sms: ' + err);
+            } else{
+                cLog('Message sent successfully, here are reference ids: ' +  
+                    sent_ids.join(','));
+            }
+        }
+    );
 }
 
 var getCommand = function(text) {
@@ -59,18 +86,19 @@ var getCommand = function(text) {
 var readMsgs = function() {
     cLog('getting messages...');
     modem.getMessages(function(msg){
-        cLog(msg);
+        cLog(msg.length);
     });
 }
 
-var bash = function(command) {
+var bash = function(command, sender) {
+    var response;
     child = exec(command, function (error, stdout, stderr) {
         // get message
-        var response = stdout || stderr || error;
-
+        response = error || stdout || stderr;
+        
         cLog(response);
 
-        return response;
+        sendMsg(sender, response);
     });
 }
 
