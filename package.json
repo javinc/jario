@@ -1,0 +1,9 @@
+{
+  "name": "commander",
+  "description": "sms controlled system using modem",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "modem": "1.0.2"
+  }
+}
