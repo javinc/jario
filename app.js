@@ -1,6 +1,5 @@
 var child,
-    magicWord = 'jarvis',
-    sys = require('sys'),
+    magicWord = 'jario',
     exec = require('child_process').exec,
     modem = require('modem').Modem(),
     device = process.argv[2];
@@ -32,8 +31,6 @@ var main = function() {
 
                 // execute command
                 var response = bash(command);
-
-                
             } else {
                 cLog('You dont know me? just say my name.');
             }
