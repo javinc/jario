@@ -15,9 +15,9 @@ var main = function() {
     cLog('connecting on device ' + device + ' ...');
     modem.open(device, function(){
         cLog('connected.');
-        
-        readMsgs();
-
+	
+        var msgCount = readMsgs();
+	
         // listners
         var received = 'sms received';
         modem.on(received, function(msg) {
@@ -27,7 +27,8 @@ var main = function() {
 
             // check valid msg
             if(checkMagicWord(msg.text)) {
-                var command = getCommand(msg.text);
+                cLog(msg);
+		var command = getCommand(msg.text);
 
                 cLog('command: ' + command);
 
@@ -42,10 +43,13 @@ var main = function() {
             }
         
             // delete msg
-            modem.deleteMessage(1, function(){
-                cLog('Message deleted');
-            });
+	    deleteMsg(msgCount - 1);
         });
+
+	modem.on('memory full', function() {
+	    cLog('Memory is full. Im gonna delete some message');
+	    deleteMsg(1);
+	});
     });
 }
 
@@ -69,6 +73,12 @@ var sendMsg = function(receiver, text) {
     );
 }
 
+var deleteMsg = function(index) {
+     modem.deleteMessage(index, function() {
+         cLog('Message deleted on index ' + index);
+     });
+}
+
 var getCommand = function(text) {
     // split them by new line
     var chunks = text.split("\n");
@@ -86,7 +96,9 @@ var getCommand = function(text) {
 var readMsgs = function() {
     cLog('getting messages...');
     modem.getMessages(function(msg){
-        cLog(msg.length);
+	cLog(msg.length);
+
+	return msg.length;
     });
 }
 
