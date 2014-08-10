@@ -21,7 +21,7 @@ var main = function() {
         // listners
         var received = 'sms received';
         modem.on(received, function(msg) {
-            cLog(received); 
+            cLog(received + '!'); 
 
             var response = null;
 
@@ -38,7 +38,8 @@ var main = function() {
                     response = 'Done sir!';
                 }
             } else {
-                sendMsg(msg.sender, 'You dont know me? just say my name.');
+                cLog('This one doesn\'t know me');
+                sendMsg(msg.sender, 'You dont know me?');
             }
         
             // delete msg
@@ -59,7 +60,7 @@ var checkMagicWord = function(text) {
 var sendMsg = function(receiver, text) {
     modem.sms({
         receiver: receiver,
-        text: text,
+        text: escape(text),
         encoding: '7bit'},
         function(err, sent_ids) {
             if(err) {
@@ -113,7 +114,7 @@ var bash = function(command, sender) {
     var response;
     child = exec(command, function (error, stdout, stderr) {
         // get message
-        response = error || stdout || stderr;
+        response = stdout || stderr;
         
         cLog(response);
 
