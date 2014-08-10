@@ -3,6 +3,7 @@ var child,
     exec = require('child_process').exec,
     modem = require('modem').Modem(),
     device = process.argv[2];
+    option = process.argv[3];
 
 var main = function() {
     // checker
@@ -83,6 +84,8 @@ var deleteAllMsgs = function(msgs) {
     for (var i = 0; i < msgs.length; i++) {
         deleteMsg(i);
     };
+
+    cLog('All messages deleted');
 }
 
 var getCommand = function(text) {
@@ -104,7 +107,9 @@ var readMsgs = function() {
     modem.getMessages(function(msg){
         cLog('msg count: ' + msg.length);
 
-        // deleteAllMsgs(msg);
+        if(option == 'reset') {
+            deleteAllMsgs(msg);
+        }
 
         return msg.length;
     });
