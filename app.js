@@ -34,10 +34,6 @@ var main = function() {
 
                 // execute command
                 bash(command, msg.sender);
-
-                if(response == null) {
-                    response = 'Done sir!';
-                }
             } else {
                 cLog('This one doesn\'t know me');
                 sendMsg(msg.sender, 'You dont know me?');
@@ -59,9 +55,17 @@ var checkMagicWord = function(text) {
 }
 
 var sendMsg = function(receiver, text) {
+    if(option == 'noreps') {
+        cLog('Were on no-reply mode!');
+
+        return;
+    }
+
+    text = escaper(text);
+
     modem.sms({
         receiver: receiver,
-        text: escape(text),
+        text: text,
         encoding: '7bit'},
         function(err, sent_ids) {
             if(err) {
@@ -85,7 +89,7 @@ var deleteAllMsgs = function(msgs) {
         deleteMsg(i);
     };
 
-    cLog('All messages deleted');
+    cLog('some messages deleted');
 }
 
 var getCommand = function(text) {
@@ -123,6 +127,10 @@ var bash = function(command, sender) {
         
         cLog(response);
 
+        if(!response) {
+            response = 'Done sir!';
+        }
+
         sendMsg(sender, response);
     });
 }
@@ -134,6 +142,10 @@ var err = function(msg) {
 
 var cLog = function(msg) {
     console.log(msg);
+}
+
+var escaper = function(text) {
+    return text.split('/').join('\/');
 }
 
 // call main method
