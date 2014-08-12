@@ -10,18 +10,22 @@ var main = function() {
     if(!device) {
         err('device not specified');
     }
-
+    
+    cLog('=======================================');
+    cLog('');
     cLog('Hello my name is ' + magicWord);
+    cLog('');    
 
     cLog('connecting on device ' + device + ' ...');
     modem.open(device, function(){
-        cLog('connected.');
+        cLog('connected!');
 	
         var msgCount = readMsgs();
 	
         // listners
         var received = 'sms received';
         modem.on(received, function(msg) {
+            cLog('');
             cLog(received + '!'); 
 
             var response = null;
@@ -60,7 +64,9 @@ var sendMsg = function(receiver, text) {
 
         return;
     }
-
+    
+    cLog('');
+    cLog('replying ...');
     text = escaper(text);
 
     modem.sms({
@@ -107,7 +113,8 @@ var getCommand = function(text) {
 }
 
 var readMsgs = function() {
-    cLog('getting messages...');
+    cLog('');
+    cLog('getting messages ...');
     modem.getMessages(function(msg){
         cLog('msg count: ' + msg.length);
 
